@@ -1,0 +1,23 @@
+# environment variables
+.env
+.env.*
+backend/.env
+frontend/.env
+
+# dependencies
+node_modules/
+
+# logs
+logs
+*.log
+
+# build files
+dist/
+build/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Vite
+.vite
