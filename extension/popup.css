@@ -1,0 +1,221 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+
+:root {
+    --bg-deep: #030712;
+    --bg-card: #0b0f1a;
+    --primary: #4f46e5;
+    --primary-glow: rgba(79, 70, 229, 0.4);
+    --text-main: #f3f4f6;
+    --text-dim: #6b7280;
+    --accent-red: #ef4444;
+    --accent-green: #10b981;
+}
+
+body {
+    width: 350px;
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-deep);
+    color: var(--text-main);
+    overflow: hidden;
+    border: 1px solid #1f2937;
+}
+
+.container {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+header {
+    margin-bottom: 10px;
+}
+
+.logo-text {
+    display: block;
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: -0.05em;
+    color: var(--text-main);
+}
+
+.sub-text {
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: 0.2em;
+    color: var(--primary);
+    text-transform: uppercase;
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    animation: fadeIn 0.4s ease-out;
+}
+
+.hidden {
+    display: none;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(17, 24, 39, 0.5);
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid #1f2937;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-top: 4px;
+}
+
+.dot.red { background-color: var(--accent-red); box-shadow: 0 0 10px var(--accent-red); }
+.dot.green { background-color: var(--accent-green); box-shadow: 0 0 10px var(--accent-green); }
+
+.error-box {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.error-text {
+    font-size: 9px;
+    font-weight: 900;
+    color: var(--accent-red);
+    letter-spacing: 0.1em;
+}
+
+.status-label {
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.input-group label {
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+}
+
+input, textarea {
+    background: #111827;
+    border: 1px solid #1f2937;
+    border-radius: 8px;
+    padding: 10px;
+    color: white;
+    font-size: 11px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: all 0.2s;
+}
+
+input:focus, textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 10px var(--primary-glow);
+}
+
+textarea {
+    height: 60px;
+    resize: none;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(79, 70, 229, 0.2);
+    transition: all 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: #4338ca;
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: var(--text-dim);
+    border: 1px solid #1f2937;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+    color: var(--text-main);
+    border-color: var(--text-main);
+}
+
+.info-card {
+    background: #0b0f1a;
+    border: 1px solid #1f2937;
+    padding: 15px;
+    border-radius: 15px;
+}
+
+.info-card p {
+    font-size: 11px;
+    line-height: 1.6;
+    color: var(--text-dim);
+    margin: 0;
+}
+
+.crypto-note {
+    font-size: 7px;
+    text-align: center;
+    color: #374151;
+    letter-spacing: 0.05em;
+}
+
+footer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.footer-line {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #1f2937, transparent);
+}
+
+footer p {
+    font-size: 7px;
+    font-weight: 900;
+    text-align: center;
+    letter-spacing: 0.2em;
+    color: #1f2937;
+    margin: 0;
+}

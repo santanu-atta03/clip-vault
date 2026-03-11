@@ -23,7 +23,7 @@ const createNote = async (req, res) => {
         const note = await Note.create({
             title,
             content,
-            image,
+            image: image || req.body.imageUrl || null,
             isPinned: isPinned === 'true' || isPinned === true,
             tags: tags ? (Array.isArray(tags) ? tags : tags.split(',').map(t => t.trim())) : [],
             color,

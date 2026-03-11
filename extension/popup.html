@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClipVault | Neural Snatcher</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <span class="logo-text">CLIP_VAULT</span>
+                <span class="sub-text">NEURAL_SNATCHER_v1.0</span>
+            </div>
+        </header>
+
+        <div id="auth-section" class="section">
+            <div class="status-indicator">
+                <span class="dot red"></span>
+                <span class="status-label">OFFLINE_PROTOCOL</span>
+            </div>
+            
+            <div id="error-message" class="error-box hidden">
+                <span class="error-text">PROTOCOL_ERROR: MISSING_TELEMETRY</span>
+            </div>
+
+            <div class="input-group">
+                <label>CORE_API_ENDPOINT</label>
+                <input type="text" id="api-url" placeholder="http://localhost:5000">
+            </div>
+
+            <div class="input-group">
+                <label>AUTHORIZATION_TOKEN (JWT)</label>
+                <textarea id="token" placeholder="Paste your bearer token here..."></textarea>
+            </div>
+
+            <button id="save-settings" class="btn-primary">INITIALIZE_SYNC</button>
+            <p class="crypto-note">TOKEN_ENCRYPTED_IN_LOCAL_STORAGE</p>
+        </div>
+
+        <div id="ready-section" class="section hidden">
+            <div class="status-indicator">
+                <span class="dot green"></span>
+                <span class="status-label">NEURAL_LINK_ACTIVE</span>
+            </div>
+            
+            <div class="info-card">
+                <p>Telemetry operational. Use the system context menu (Right-Click) on any webpage to snatch intelligence into your vault.</p>
+            </div>
+
+            <button id="reset-settings" class="btn-secondary">RECONFIGURE_CORE</button>
+        </div>
+        
+        <footer>
+            <div class="footer-line"></div>
+            <p>ACCESS_GRANTED_TO_AUTHORIZED_OPERATOR</p>
+        </footer>
+    </div>
+    <script src="popup.js"></script>
+</body>
+</html>

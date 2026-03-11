@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Users, ShieldCheck, Loader2 } from 'lucide-react';
 import serverService from '../services/serverService';
+import Modal from '../components/Modal';
 
 const DiscoverServers = () => {
     const [servers, setServers] = useState([]);
     const [search, setSearch] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [modal, setModal] = useState({ isOpen: false, title: '', message: '', type: 'info' });
 
     useEffect(() => {
         fetchServers();
@@ -32,7 +34,12 @@ const DiscoverServers = () => {
                 s._id === serverId ? { ...s, hasPendingRequest: true } : s
             ));
         } catch (err) {
-            alert(err.response?.data?.message || 'Failed to send join request');
+            setModal({
+                isOpen: true,
+                title: 'Access Denied',
+                message: err.response?.data?.message || 'The system could not process your join request. Please retry connection.',
+                type: 'error'
+            });
         }
     };
 
@@ -137,6 +144,14 @@ const DiscoverServers = () => {
                     </div>
                 )}
             </div>
+
+            <Modal 
+                isOpen={modal.isOpen}
+                onClose={() => setModal({ ...modal, isOpen: false })}
+                title={modal.title}
+                message={modal.message}
+                type={modal.type}
+            />
         </div>
     );
 };

@@ -5,6 +5,7 @@ import { Plus, Search, Filter, Clipboard, LayoutGrid, LayoutList, LogOut, User }
 import { motion, AnimatePresence } from 'framer-motion';
 import NoteCard from '../components/NoteCard';
 import NoteEditor from '../components/NoteEditor';
+import Modal from '../components/Modal';
 
 const Dashboard = () => {
     const { notes, loading, fetchNotes } = useNotes();
@@ -13,6 +14,9 @@ const Dashboard = () => {
     const [isEditorOpen, setIsEditorOpen] = useState(false);
     const [editingNote, setEditingNote] = useState(null);
     const [filter, setFilter] = useState('all');
+    const [isExtensionModalOpen, setIsExtensionModalOpen] = useState(false);
+    const [copied, setCopied] = useState(false);
+    const [modal, setModal] = useState({ isOpen: false, title: '', message: '', type: 'info', isConfirm: false, onConfirm: null });
 
     useEffect(() => {
         fetchNotes();
@@ -39,6 +43,20 @@ const Dashboard = () => {
         setIsEditorOpen(true);
     };
 
+    const handleDeleteRequest = (note) => {
+        setModal({
+            isOpen: true,
+            title: 'Purge Intel?',
+            message: `Are you sure you want to permanently eliminate "${note.title || 'Untitled Note'}" from your vault? This operation is irreversible.`,
+            type: 'warning',
+            isConfirm: true,
+            confirmText: 'Purge',
+            onConfirm: () => {
+                deleteNote(note._id);
+            }
+        });
+    };
+
     return (
         <main className="flex-1 w-full bg-gray-950 overflow-y-auto custom-scrollbar px-6 sm:px-12 py-12 sm:py-20">
             {/* Premium Header */}
@@ -63,6 +81,15 @@ const Dashboard = () => {
                         <div className="w-[1px] h-6 bg-gray-800 mx-2" />
                         <button onClick={logout} className="text-gray-600 hover:text-red-500 transition-all p-2 bg-gray-950 rounded-xl border border-gray-900 hover:border-red-500/20">
                             <LogOut size={16} />
+                        </button>
+                        <button 
+                            onClick={() => setIsExtensionModalOpen(true)}
+                            className="text-indigo-500 hover:text-white transition-all p-2 bg-indigo-500/5 rounded-xl border border-indigo-500/10 hover:border-indigo-500/30 group"
+                        >
+                            <div className="flex items-center gap-2">
+                                <Plus size={16} className="group-hover:rotate-45 transition-transform" />
+                                <span className="text-[10px] font-black uppercase tracking-widest hidden xl:inline">Neural Link</span>
+                            </div>
                         </button>
                     </div>
 
@@ -133,6 +160,7 @@ const Dashboard = () => {
                                 key={note._id}
                                 note={note}
                                 onEdit={handleEditNote}
+                                onDelete={handleDeleteRequest}
                                 style={{ animationDelay: `${idx * 50}ms` }}
                             />
                         ))}
@@ -159,6 +187,77 @@ const Dashboard = () => {
                 </div>
             )}
 
+            {/* Extension Connection Modal */}
+            <AnimatePresence>
+                {isExtensionModalOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center p-4"
+                        onClick={() => setIsExtensionModalOpen(false)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            className="bg-gray-900 border border-gray-800 rounded-[2.5rem] p-8 max-w-lg w-full shadow-2xl"
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <div className="flex items-center justify-between mb-8">
+                                <div>
+                                    <h2 className="text-2xl font-black text-white tracking-tight">Neural Link</h2>
+                                    <p className="text-[10px] text-indigo-500 font-black uppercase tracking-widest mt-1">Extension Configuration</p>
+                                </div>
+                                <div className="p-3 bg-indigo-500/10 rounded-2xl">
+                                    <Plus className="text-indigo-500 rotate-45" size={24} />
+                                </div>
+                            </div>
+
+                            <p className="text-gray-400 text-sm mb-8 leading-relaxed">
+                                Connect your <span className="text-white font-bold">Neural Snatcher</span> browser extension by providing these telemetry parameters. 
+                                This allows you to snatch intel directly into your vault from any target website.
+                            </p>
+
+                            <div className="space-y-6">
+                                <div className="space-y-2">
+                                    <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Protocol Endpoint</label>
+                                    <div className="bg-gray-950 border border-gray-800 rounded-2xl p-4 text-xs font-mono text-indigo-400 break-all">
+                                        {import.meta.env.VITE_API_URL || window.location.origin}
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Authorization Token</label>
+                                    <div className="relative group">
+                                        <div className="bg-gray-950 border border-gray-800 rounded-2xl p-4 text-[10px] font-mono text-gray-400 break-all max-h-32 overflow-y-auto custom-scrollbar">
+                                            {localStorage.getItem('token')}
+                                        </div>
+                                        <button 
+                                            onClick={() => {
+                                                navigator.clipboard.writeText(localStorage.getItem('token'));
+                                                setCopied(true);
+                                                setTimeout(() => setCopied(false), 2000);
+                                            }}
+                                            className="absolute top-2 right-2 bg-indigo-600 hover:bg-indigo-500 text-white text-[8px] font-black uppercase px-3 py-1 rounded-lg transition-all"
+                                        >
+                                            {copied ? 'Copied' : 'Copy'}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button 
+                                onClick={() => setIsExtensionModalOpen(false)}
+                                className="w-full mt-10 py-5 bg-gray-800 hover:bg-gray-700 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all active:scale-95"
+                            >
+                                Close Protocol
+                            </button>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             {/* Note Editor Modal */}
             <AnimatePresence>
                 {isEditorOpen && (
@@ -172,6 +271,17 @@ const Dashboard = () => {
                     />
                 )}
             </AnimatePresence>
+
+            <Modal 
+                isOpen={modal.isOpen}
+                onClose={() => setModal({ ...modal, isOpen: false })}
+                title={modal.title}
+                message={modal.message}
+                type={modal.type}
+                isConfirm={modal.isConfirm}
+                onConfirm={modal.onConfirm}
+                confirmText={modal.confirmText}
+            />
         </main>
     );
 };

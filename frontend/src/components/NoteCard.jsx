@@ -5,9 +5,9 @@ import ReactMarkdown from 'react-markdown';
 import { toast } from 'react-hot-toast';
 import { useNotes } from '../context/NoteContext';
 
-const NoteCard = ({ note, onEdit }) => {
+const NoteCard = ({ note, onEdit, onDelete }) => {
     const [copied, setCopied] = useState(false);
-    const { deleteNote, updateNote } = useNotes();
+    const { updateNote } = useNotes();
     const imageUrl = note.image ? `${import.meta.env.VITE_API_URL.replace('/api', '')}${note.image}` : null;
 
     const handleCopy = () => {
@@ -26,11 +26,9 @@ const NoteCard = ({ note, onEdit }) => {
         }
     };
 
-    const handleDelete = async (e) => {
+    const handleDelete = (e) => {
         e.stopPropagation();
-        if (window.confirm('Are you sure you want to delete this note?')) {
-            await deleteNote(note._id);
-        }
+        onDelete(note);
     };
 
     return (

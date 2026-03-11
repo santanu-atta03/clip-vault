@@ -15,6 +15,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { io } from 'socket.io-client';
 import serverService from '../services/serverService';
+import Modal from '../components/Modal';
 
 const ServerPage = ({ user }) => {
     const { id } = useParams();
@@ -33,6 +34,7 @@ const ServerPage = ({ user }) => {
     const [isPosting, setIsPosting] = useState(false);
     const [showMembers, setShowMembers] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
+    const [modal, setModal] = useState({ isOpen: false, title: '', message: '', type: 'info', isConfirm: false, onConfirm: null });
     const socketRef = useRef();
     const scrollRef = useRef();
 
@@ -141,20 +143,37 @@ const ServerPage = ({ user }) => {
             setPostImage(null);
             setPostPreview(null);
         } catch (err) {
-            alert('Failed to post');
+            setModal({
+                isOpen: true,
+                title: 'Transmission Error',
+                message: 'Failed to inject intel stream into the server cluster.',
+                type: 'error'
+            });
         } finally {
             setIsPosting(false);
         }
     };
 
-    const handleDeletePost = async (postId) => {
-        if (window.confirm('Delete this post?')) {
-            try {
-                await serverService.deletePost(postId);
-            } catch (err) {
-                alert('Failed to delete post');
+    const handleDeletePost = (postId) => {
+        setModal({
+            isOpen: true,
+            title: 'Delete Intel',
+            message: 'Are you sure you want to permanently purge this intel from the server history?',
+            type: 'warning',
+            isConfirm: true,
+            onConfirm: async () => {
+                try {
+                    await serverService.deletePost(postId);
+                } catch (err) {
+                    setModal({
+                        isOpen: true,
+                        title: 'Purge Failed',
+                        message: 'The system could not eliminate the specified data stream.',
+                        type: 'error'
+                    });
+                }
             }
-        }
+        });
     };
 
     const handleAcceptRequest = async (requestId) => {
@@ -165,19 +184,37 @@ const ServerPage = ({ user }) => {
             const membersData = await serverService.getServerMembers(id);
             setMembers(membersData);
         } catch (err) {
-            alert('Error');
+            setModal({
+                isOpen: true,
+                title: 'Authorization Error',
+                message: 'Failed to process member validation request.',
+                type: 'error'
+            });
         }
     };
 
-    const handleLeaveServer = async () => {
-        if (window.confirm('Leave this server?')) {
-            try {
-                await serverService.leaveServer(id);
-                navigate('/dashboard');
-            } catch (err) {
-                alert(err.response?.data?.message);
+    const handleLeaveServer = () => {
+        setModal({
+            isOpen: true,
+            title: 'Sever Connection?',
+            message: 'You are about to disconnect from this cluster. All synchronized telemetry will be lost.',
+            type: 'warning',
+            isConfirm: true,
+            confirmText: 'Disconnect',
+            onConfirm: async () => {
+                try {
+                    await serverService.leaveServer(id);
+                    navigate('/dashboard');
+                } catch (err) {
+                    setModal({
+                        isOpen: true,
+                        title: 'Disconnect Error',
+                        message: err.response?.data?.message || 'Failed to sever connection protocol.',
+                        type: 'error'
+                    });
+                }
             }
-        }
+        });
     };
 
     if (loading && !server) {
@@ -495,11 +532,19 @@ const ServerPage = ({ user }) => {
                                                     <p className="text-red-900 text-[10px] font-black uppercase tracking-widest mt-1">This operation is permanent and irreversible</p>
                                                 </div>
                                                 <button
-                                                    onClick={async () => {
-                                                        if (window.confirm('IRREVERSIBLE: Execute server termination protocol?')) {
-                                                            await serverService.deleteServer(id);
-                                                            navigate('/dashboard');
-                                                        }
+                                                    onClick={() => {
+                                                        setModal({
+                                                            isOpen: true,
+                                                            title: 'TERMINATION PROTOCOL',
+                                                            message: 'IRREVERSIBLE: Execute server infrastructure termination? All data will be permanently purged from the network.',
+                                                            type: 'error',
+                                                            isConfirm: true,
+                                                            confirmText: 'Execute',
+                                                            onConfirm: async () => {
+                                                                await serverService.deleteServer(id);
+                                                                navigate('/dashboard');
+                                                            }
+                                                        });
                                                     }}
                                                     className="w-full sm:w-auto px-8 py-3 bg-red-600/10 hover:bg-red-600/20 text-red-500 border border-red-600/30 rounded-2xl transition-all font-black uppercase tracking-widest text-[10px] active:scale-95"
                                                 >
@@ -514,6 +559,17 @@ const ServerPage = ({ user }) => {
                     )}
                 </AnimatePresence>
             </div>
+
+            <Modal 
+                isOpen={modal.isOpen}
+                onClose={() => setModal({ ...modal, isOpen: false })}
+                title={modal.title}
+                message={modal.message}
+                type={modal.type}
+                isConfirm={modal.isConfirm}
+                onConfirm={modal.onConfirm}
+                confirmText={modal.confirmText}
+            />
         </div>
     );
 };
