@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Plus, Compass, LayoutDashboard, LogOut, Users } from 'lucide-react';
+import { Plus, Compass, LayoutDashboard, LogOut, Users, Archive } from 'lucide-react';
 import serverService from '../../services/serverService';
 
 const ServerSidebar = ({ user, logout }) => {
@@ -46,6 +46,14 @@ const ServerSidebar = ({ user, logout }) => {
                     >
                         <Compass size={20} className="shrink-0 group-hover:scale-110 transition-transform" />
                         <span className="hidden md:block font-black uppercase text-[11px] tracking-widest">Discovery</span>
+                    </NavLink>
+
+                    <NavLink
+                        to="/archives"
+                        className={({ isActive }) => `flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 group ${isActive ? 'bg-gray-900 text-white shadow-xl' : 'text-gray-500 hover:text-gray-300 hover:bg-gray-900/50'}`}
+                    >
+                        <Archive size={20} className="shrink-0 group-hover:scale-110 transition-transform" />
+                        <span className="hidden md:block font-black uppercase text-[11px] tracking-widest">Data Center</span>
                     </NavLink>
                 </div>
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Compass, Plus } from 'lucide-react';
+import { LayoutDashboard, Compass, Plus, Archive } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import serverService from '../services/serverService';
 
@@ -43,6 +43,15 @@ const MobileDock = () => {
                 >
                     <motion.div whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.9 }}>
                         <Compass size={24} />
+                    </motion.div>
+                </NavLink>
+
+                <NavLink
+                    to="/archives"
+                    className={({ isActive }) => `relative rounded-2xl p-3.5 transition-all duration-300 group ${isActive ? 'bg-white/10 text-white shadow-2xl' : 'text-gray-500 hover:text-gray-300'}`}
+                >
+                    <motion.div whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.9 }}>
+                        <Archive size={24} />
                     </motion.div>
                 </NavLink>
 

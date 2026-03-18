@@ -10,6 +10,7 @@ import Register from './pages/Register';
 import DiscoverServers from './pages/DiscoverServers';
 import CreateServer from './pages/CreateServer';
 import ServerPage from './pages/ServerPage';
+import Archives from './pages/Archives';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -53,6 +54,15 @@ const AppContent = () => {
           element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/archives"
+          element={
+            <ProtectedRoute>
+              <Archives />
             </ProtectedRoute>
           }
         />
