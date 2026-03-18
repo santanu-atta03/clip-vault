@@ -30,6 +30,11 @@ const createNote = async (req, res) => {
             user: req.user._id,
         });
 
+        const io = req.app.get('io');
+        if (io) {
+            io.to(req.user._id.toString()).emit('new_note', note);
+        }
+
         res.status(201).json(note);
     } catch (error) {
         res.status(400).json({ message: error.message });

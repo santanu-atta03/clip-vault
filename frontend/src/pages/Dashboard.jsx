@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNotes } from '../context/NoteContext';
 import { useAuth } from '../context/AuthContext';
 import { Plus, Search, Filter, Clipboard, LayoutGrid, LayoutList, LogOut, User } from 'lucide-react';
@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import NoteCard from '../components/NoteCard';
 import NoteEditor from '../components/NoteEditor';
 import Modal from '../components/Modal';
+import { io } from 'socket.io-client';
 
 const Dashboard = () => {
     const { notes, loading, fetchNotes } = useNotes();
@@ -17,10 +18,26 @@ const Dashboard = () => {
     const [isExtensionModalOpen, setIsExtensionModalOpen] = useState(false);
     const [copied, setCopied] = useState(false);
     const [modal, setModal] = useState({ isOpen: false, title: '', message: '', type: 'info', isConfirm: false, onConfirm: null });
+    const socketRef = useRef();
 
     useEffect(() => {
         fetchNotes();
-    }, []);
+
+        if (user) {
+            const socketUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
+            socketRef.current = io(socketUrl);
+
+            socketRef.current.emit('join_user', user._id);
+
+            socketRef.current.on('new_note', (note) => {
+                fetchNotes();
+            });
+
+            return () => {
+                socketRef.current.disconnect();
+            };
+        }
+    }, [user, fetchNotes]);
 
     const filteredNotes = notes.filter(note => {
         const matchesSearch =
