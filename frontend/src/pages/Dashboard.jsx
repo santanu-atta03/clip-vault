@@ -7,6 +7,7 @@ import NoteCard from '../components/NoteCard';
 import NoteEditor from '../components/NoteEditor';
 import Modal from '../components/Modal';
 import { io } from 'socket.io-client';
+import Loading from '../components/Loading';
 
 const Dashboard = () => {
     const { notes, loading, fetchNotes } = useNotes();
@@ -157,13 +158,7 @@ const Dashboard = () => {
             </div>
 
             {loading && notes.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-40 gap-8">
-                    <div className="relative">
-                        <div className="absolute inset-0 bg-indigo-600/20 blur-2xl rounded-full animate-pulse" />
-                        <div className="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin relative z-10" />
-                    </div>
-                    <p className="text-gray-700 font-black uppercase text-[10px] tracking-[0.4em]">Establishing Sync...</p>
-                </div>
+                <Loading message="Establishing Sync" />
             ) : filteredNotes.length > 0 ? (
                 <motion.div
                     layout

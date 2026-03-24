@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-hot-toast';
 import { Shield, Mail, Lock, User, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Loading from '../components/Loading';
 
 const Register = () => {
     const [username, setUsername] = useState('');
@@ -29,6 +30,7 @@ const Register = () => {
 
     return (
         <div className="min-h-screen flex items-center justify-center p-4">
+            {loading && <Loading fullScreen={true} message="Initializing Protocol" />}
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}

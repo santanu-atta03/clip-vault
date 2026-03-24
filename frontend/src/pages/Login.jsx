@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-hot-toast';
 import { Shield, Mail, Lock, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Loading from '../components/Loading';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -28,6 +29,7 @@ const Login = () => {
 
     return (
         <div className="min-h-screen flex items-center justify-center p-4">
+            {loading && <Loading fullScreen={true} message="Authenticating Operator" />}
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}

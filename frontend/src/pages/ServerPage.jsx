@@ -16,6 +16,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { io } from 'socket.io-client';
 import serverService from '../services/serverService';
 import Modal from '../components/Modal';
+import Loading from '../components/Loading';
 
 const ServerPage = ({ user }) => {
     const { id } = useParams();
@@ -218,11 +219,7 @@ const ServerPage = ({ user }) => {
     };
 
     if (loading && !server) {
-        return (
-            <div className="flex-1 bg-gray-950 flex items-center justify-center">
-                <Loader2 className="animate-spin text-indigo-500" size={40} />
-            </div>
-        );
+        return <Loading fullScreen={true} message="Synchronizing Cluster" />;
     }
 
     return (

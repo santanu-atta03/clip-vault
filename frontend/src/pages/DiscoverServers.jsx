@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, Users, ShieldCheck, Loader2 } from 'lucide-react';
 import serverService from '../services/serverService';
 import Modal from '../components/Modal';
+import Loading from '../components/Loading';
 
 const DiscoverServers = () => {
     const [servers, setServers] = useState([]);
@@ -69,13 +70,7 @@ const DiscoverServers = () => {
                 </div>
 
                 {loading && servers.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-40 gap-8 animate-in fade-in duration-500">
-                        <div className="relative">
-                            <div className="absolute inset-0 bg-indigo-600/20 blur-2xl rounded-full animate-pulse" />
-                            <Loader2 className="animate-spin text-indigo-500 relative z-10" size={48} />
-                        </div>
-                        <p className="text-gray-700 font-black uppercase text-[10px] tracking-[0.4em]">Establishing Uplink...</p>
-                    </div>
+                    <Loading message="Establishing Uplink" />
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {servers.map((server, index) => (

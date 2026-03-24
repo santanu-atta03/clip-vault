@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { NoteProvider } from './context/NoteContext';
+import Loading from './components/Loading';
 import MainLayout from './components/MainLayout';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
@@ -16,11 +17,7 @@ const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return <Loading fullScreen={true} message="Establishing Secure Connection" />;
   }
 
   if (!user) {

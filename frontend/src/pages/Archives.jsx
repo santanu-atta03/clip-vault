@@ -5,6 +5,7 @@ import { Folder as FolderIcon, FileText, Upload, Plus, Trash2, ArrowLeft, MoreVe
 import { motion, AnimatePresence } from 'framer-motion';
 import archiveService from '../services/archiveService';
 import Modal from '../components/Modal';
+import Loading from '../components/Loading';
 
 const Archives = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -185,13 +186,7 @@ const Archives = () => {
             </div>
 
             {loading ? (
-                <div className="flex flex-col items-center justify-center py-40 gap-8">
-                    <div className="relative">
-                        <div className="absolute inset-0 bg-indigo-600/20 blur-2xl rounded-full animate-pulse" />
-                        <div className="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin relative z-10" />
-                    </div>
-                    <p className="text-gray-700 font-black uppercase text-[10px] tracking-[0.4em]">Decyphering Archives...</p>
-                </div>
+                <Loading message="Deciphering Archives" />
             ) : (
                 <div className="space-y-12">
                     {/* Folders Section */}

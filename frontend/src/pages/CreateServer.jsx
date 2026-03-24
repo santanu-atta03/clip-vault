@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Camera, ArrowLeft, Loader2, Plus } from 'lucide-react';
 import serverService from '../services/serverService';
+import Loading from '../components/Loading';
 
 const CreateServer = () => {
     const [name, setName] = useState('');
@@ -44,6 +45,7 @@ const CreateServer = () => {
 
     return (
         <div className="flex-1 bg-gray-950 flex flex-col items-center justify-center p-6 sm:p-12 overflow-y-auto custom-scrollbar">
+            {loading && <Loading fullScreen={true} message="Initializing Cluster" />}
             <div className="max-w-2xl w-full animate-in fade-in slide-in-from-bottom-3 duration-700">
                 <button
                     onClick={() => navigate(-1)}
