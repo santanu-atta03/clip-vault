@@ -17,6 +17,7 @@ import { io } from 'socket.io-client';
 import serverService from '../services/serverService';
 import Modal from '../components/Modal';
 import Loading from '../components/Loading';
+import { PostSkeleton } from '../components/Skeleton';
 
 const ServerPage = ({ user }) => {
     const { id } = useParams();
@@ -219,7 +220,17 @@ const ServerPage = ({ user }) => {
     };
 
     if (loading && !server) {
-        return <Loading fullScreen={true} message="Synchronizing Cluster" />;
+        return (
+            <div className="flex-1 bg-gray-950 flex flex-col h-screen overflow-hidden">
+                <header className="h-16 bg-gray-900 border-b border-gray-800 flex items-center px-6">
+                    <div className="w-10 h-10 bg-gray-800 rounded-xl animate-pulse" />
+                    <div className="ml-4 w-32 h-4 bg-gray-800 rounded animate-pulse" />
+                </header>
+                <div className="flex-1 p-6 space-y-6">
+                    {[...Array(5)].map((_, i) => <PostSkeleton key={i} />)}
+                </div>
+            </div>
+        );
     }
 
     return (

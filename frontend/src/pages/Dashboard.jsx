@@ -8,6 +8,7 @@ import NoteEditor from '../components/NoteEditor';
 import Modal from '../components/Modal';
 import { io } from 'socket.io-client';
 import Loading from '../components/Loading';
+import { NoteCardSkeleton } from '../components/Skeleton';
 
 const Dashboard = () => {
     const { notes, loading, fetchNotes } = useNotes();
@@ -158,7 +159,9 @@ const Dashboard = () => {
             </div>
 
             {loading && notes.length === 0 ? (
-                <Loading message="Establishing Sync" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3 3xl:grid-cols-4 gap-8 mb-24">
+                    {[...Array(8)].map((_, i) => <NoteCardSkeleton key={i} />)}
+                </div>
             ) : filteredNotes.length > 0 ? (
                 <motion.div
                     layout

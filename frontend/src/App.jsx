@@ -1,17 +1,18 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { NoteProvider } from './context/NoteContext';
 import Loading from './components/Loading';
-import MainLayout from './components/MainLayout';
-import Dashboard from './pages/Dashboard';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import DiscoverServers from './pages/DiscoverServers';
-import CreateServer from './pages/CreateServer';
-import ServerPage from './pages/ServerPage';
-import Archives from './pages/Archives';
+
+const MainLayout = lazy(() => import('./components/MainLayout'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Login = lazy(() => import('./pages/Login'));
+const Register = lazy(() => import('./pages/Register'));
+const DiscoverServers = lazy(() => import('./pages/DiscoverServers'));
+const CreateServer = lazy(() => import('./pages/CreateServer'));
+const ServerPage = lazy(() => import('./pages/ServerPage'));
+const Archives = lazy(() => import('./pages/Archives'));
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -23,7 +24,11 @@ const ProtectedRoute = ({ children }) => {
   if (!user) {
     return <Navigate to="/login" />;
   }
-  return <MainLayout>{children}</MainLayout>;
+  return (
+    <Suspense fallback={<Loading fullScreen={true} />}>
+      <MainLayout>{children}</MainLayout>
+    </Suspense>
+  );
 };
 
 const AppContent = () => {
@@ -42,57 +47,59 @@ const AppContent = () => {
           },
         }}
       />
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+      <Suspense fallback={<Loading fullScreen={true} />}>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
 
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="/archives"
-          element={
-            <ProtectedRoute>
-              <Archives />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/archives"
+            element={
+              <ProtectedRoute>
+                <Archives />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="/discover"
-          element={
-            <ProtectedRoute>
-              <DiscoverServers />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/discover"
+            element={
+              <ProtectedRoute>
+                <DiscoverServers />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="/create-server"
-          element={
-            <ProtectedRoute>
-              <CreateServer />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/create-server"
+            element={
+              <ProtectedRoute>
+                <CreateServer />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="/servers/:id"
-          element={
-            <ProtectedRoute>
-              <ServerPage user={user} />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/servers/:id"
+            element={
+              <ProtectedRoute>
+                <ServerPage user={user} />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route path="/" element={<Navigate to="/dashboard" />} />
-      </Routes>
+          <Route path="/" element={<Navigate to="/dashboard" />} />
+        </Routes>
+      </Suspense>
     </div>
   );
 };
