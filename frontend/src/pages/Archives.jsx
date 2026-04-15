@@ -136,6 +136,31 @@ const Archives = () => {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     };
 
+    const handleDownload = async (doc) => {
+        const baseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
+        const fullUrl = doc.url.startsWith('http') ? doc.url : `${baseUrl}${doc.url}`;
+        
+        try {
+            const response = await fetch(fullUrl);
+            if (!response.ok) throw new Error('Download failed');
+            const blob = await response.blob();
+            const blobUrl = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = doc.originalName || 'document';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(blobUrl);
+            toast.success('Download initialized');
+        } catch (error) {
+            toast.error('Failed to download document');
+            console.error('Download error:', error);
+            // Fallback
+            window.open(fullUrl, '_blank');
+        }
+    };
+
     return (
         <main className="flex-1 w-full bg-gray-950 overflow-y-auto custom-scrollbar px-6 sm:px-12 py-12 sm:py-20 relative">
             {/* Header */}
@@ -250,15 +275,13 @@ const Archives = () => {
                                                     <FileText size={28} className="text-emerald-400" />
                                                 </div>
                                                 <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                                                    <a 
-                                                        href={doc.url} 
-                                                        target="_blank" 
-                                                        rel="noopener noreferrer" 
+                                                    <button 
+                                                        onClick={() => handleDownload(doc)}
                                                         className="p-2 text-gray-500 hover:text-white hover:bg-gray-800 rounded-xl transition-all relative z-10"
-                                                        title="Download / View"
+                                                        title="Download"
                                                     >
                                                         <Download size={16} />
-                                                    </a>
+                                                    </button>
                                                     <button 
                                                         className="p-2 text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-all relative z-10"
                                                         onClick={() => handleDeleteDocument(doc._id)}
