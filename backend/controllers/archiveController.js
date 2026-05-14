@@ -66,22 +66,45 @@ const uploadDocument = async (req, res) => {
 
         const { folder } = req.body;
 
-        const doc = await Document.create({
+        // Ensure all required fields for Document model are present
+        const docData = {
             originalName: req.file.originalname,
-            fileName: req.file.filename, // This will be the public_id in Cloudinary
+            fileName: req.file.filename || req.file.public_id, // Safety check for different versions/configs
             mimeType: req.file.mimetype,
             size: req.file.size,
             url: req.file.path, // Full Cloudinary URL
             folder: folder && folder !== 'null' ? folder : null,
             user: req.user._id
-        });
+        };
 
+        // Check if any required field is missing
+        for (const [key, value] of Object.entries(docData)) {
+            if (value === undefined || value === null) {
+                if (key === 'folder') continue; // folder can be null
+                throw new Error(`Missing required field: ${key}`);
+            }
+        }
+
+        const doc = await Document.create(docData);
 
         res.status(201).json(doc);
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        console.error('Upload Error:', error);
+        res.status(500).json({ 
+            message: 'Failed to save document to archive',
+            error: error.message,
+            fileInfo: req.file ? {
+                originalname: req.file.originalname,
+                mimetype: req.file.mimetype,
+                size: req.file.size,
+                path: req.file.path,
+                filename: req.file.filename
+            } : 'No file provided'
+        });
     }
 };
+
+
 
 // @desc    Delete a folder
 // @route   DELETE /api/archives/folders/:id
