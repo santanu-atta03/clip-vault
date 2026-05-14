@@ -8,7 +8,8 @@ const JoinRequest = require('../models/JoinRequest');
 exports.createServer = async (req, res) => {
     try {
         const { name, description } = req.body;
-        const icon = req.file ? `/uploads/${req.file.filename}` : null;
+        const icon = req.file ? req.file.path : null;
+
 
         const server = await Server.create({
             name,
@@ -113,7 +114,8 @@ exports.updateServer = async (req, res) => {
         const { name, description } = req.body;
         if (name) server.name = name;
         if (description) server.description = description;
-        if (req.file) server.icon = `/uploads/${req.file.filename}`;
+        if (req.file) server.icon = req.file.path;
+
 
         await server.save();
         res.json(server);

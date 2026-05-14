@@ -17,7 +17,8 @@ const getNotes = async (req, res) => {
 // @access  Private
 const createNote = async (req, res) => {
     const { title, content, isPinned, tags, color } = req.body;
-    const image = req.file ? `/uploads/${req.file.filename}` : null;
+    const image = req.file ? req.file.path : null;
+
 
     try {
         const note = await Note.create({
@@ -68,8 +69,9 @@ const updateNote = async (req, res) => {
         };
 
         if (req.file) {
-            updateData.image = `/uploads/${req.file.filename}`;
+            updateData.image = req.file.path;
         } else if (removeImage === 'true' || removeImage === true) {
+
             updateData.image = null;
         }
 

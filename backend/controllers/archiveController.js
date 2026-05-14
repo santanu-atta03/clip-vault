@@ -68,13 +68,14 @@ const uploadDocument = async (req, res) => {
 
         const doc = await Document.create({
             originalName: req.file.originalname,
-            fileName: req.file.filename,
+            fileName: req.file.filename, // This will be the public_id in Cloudinary
             mimeType: req.file.mimetype,
             size: req.file.size,
-            url: `/uploads/${req.file.filename}`,
+            url: req.file.path, // Full Cloudinary URL
             folder: folder && folder !== 'null' ? folder : null,
             user: req.user._id
         });
+
 
         res.status(201).json(doc);
     } catch (error) {

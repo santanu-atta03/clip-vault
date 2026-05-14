@@ -41,7 +41,8 @@ exports.getServerPosts = async (req, res) => {
 exports.createPost = async (req, res) => {
     try {
         const { text } = req.body;
-        const image = req.file ? `/uploads/${req.file.filename}` : null;
+        const image = req.file ? req.file.path : null;
+
 
         // Check membership
         const member = await ServerMember.findOne({ server: req.params.id, user: req.user._id });
