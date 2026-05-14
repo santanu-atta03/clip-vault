@@ -1,4 +1,17 @@
 const Note = require('../models/Note');
+const cloudinary = require('../config/cloudinary');
+
+// Helper to upload buffer to Cloudinary
+const uploadToCloudinary = (buffer, options) => {
+    return new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(options, (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+        });
+        uploadStream.end(buffer);
+    });
+};
+
 
 // @desc    Get all notes for a user
 // @route   GET /api/notes
@@ -17,7 +30,16 @@ const getNotes = async (req, res) => {
 // @access  Private
 const createNote = async (req, res) => {
     const { title, content, isPinned, tags, color } = req.body;
-    const image = req.file ? req.file.path : null;
+    let image = null;
+
+    if (req.file) {
+        const result = await uploadToCloudinary(req.file.buffer, {
+            folder: 'clipvault/images',
+            transformation: [{ width: 1000, height: 1000, crop: 'limit' }]
+        });
+        image = result.secure_url;
+    }
+
 
 
     try {
@@ -69,8 +91,13 @@ const updateNote = async (req, res) => {
         };
 
         if (req.file) {
-            updateData.image = req.file.path;
+            const result = await uploadToCloudinary(req.file.buffer, {
+                folder: 'clipvault/images',
+                transformation: [{ width: 1000, height: 1000, crop: 'limit' }]
+            });
+            updateData.image = result.secure_url;
         } else if (removeImage === 'true' || removeImage === true) {
+
 
             updateData.image = null;
         }

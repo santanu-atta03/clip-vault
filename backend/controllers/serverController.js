@@ -1,6 +1,19 @@
 const Server = require('../models/Server');
 const ServerMember = require('../models/ServerMember');
 const JoinRequest = require('../models/JoinRequest');
+const cloudinary = require('../config/cloudinary');
+
+
+// Helper to upload buffer to Cloudinary
+const uploadToCloudinary = (buffer, options) => {
+    return new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(options, (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+        });
+        uploadStream.end(buffer);
+    });
+};
 
 // @desc    Create a server
 // @route   POST /api/servers/create
@@ -8,8 +21,15 @@ const JoinRequest = require('../models/JoinRequest');
 exports.createServer = async (req, res) => {
     try {
         const { name, description } = req.body;
-        const icon = req.file ? req.file.path : null;
+        let icon = null;
 
+        if (req.file) {
+            const result = await uploadToCloudinary(req.file.buffer, {
+                folder: 'clipvault/images',
+                transformation: [{ width: 500, height: 500, crop: 'limit' }]
+            });
+            icon = result.secure_url;
+        }
 
         const server = await Server.create({
             name,
@@ -17,6 +37,7 @@ exports.createServer = async (req, res) => {
             icon,
             owner: req.user._id
         });
+
 
         // Add owner as member
         await ServerMember.create({
@@ -114,7 +135,15 @@ exports.updateServer = async (req, res) => {
         const { name, description } = req.body;
         if (name) server.name = name;
         if (description) server.description = description;
-        if (req.file) server.icon = req.file.path;
+        
+        if (req.file) {
+            const result = await uploadToCloudinary(req.file.buffer, {
+                folder: 'clipvault/images',
+                transformation: [{ width: 500, height: 500, crop: 'limit' }]
+            });
+            server.icon = result.secure_url;
+        }
+
 
 
         await server.save();

@@ -55,6 +55,19 @@ const createFolder = async (req, res) => {
     }
 };
 
+const cloudinary = require('../config/cloudinary');
+
+// Helper to upload buffer to Cloudinary
+const uploadToCloudinary = (buffer, options) => {
+    return new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(options, (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+        });
+        uploadStream.end(buffer);
+    });
+};
+
 // @desc    Upload new document
 // @route   POST /api/archives/documents
 // @access  Private
@@ -66,43 +79,33 @@ const uploadDocument = async (req, res) => {
 
         const { folder } = req.body;
 
-        // Ensure all required fields for Document model are present
-        const docData = {
+        // Upload to Cloudinary manually
+        const cloudinaryResult = await uploadToCloudinary(req.file.buffer, {
+            folder: 'clipvault/documents',
+            resource_type: 'auto',
+            public_id: `doc-${Date.now()}`
+        });
+
+        const doc = await Document.create({
             originalName: req.file.originalname,
-            fileName: req.file.filename || req.file.public_id, // Safety check for different versions/configs
+            fileName: cloudinaryResult.public_id,
             mimeType: req.file.mimetype,
             size: req.file.size,
-            url: req.file.path, // Full Cloudinary URL
+            url: cloudinaryResult.secure_url,
             folder: folder && folder !== 'null' ? folder : null,
             user: req.user._id
-        };
-
-        // Check if any required field is missing
-        for (const [key, value] of Object.entries(docData)) {
-            if (value === undefined || value === null) {
-                if (key === 'folder') continue; // folder can be null
-                throw new Error(`Missing required field: ${key}`);
-            }
-        }
-
-        const doc = await Document.create(docData);
+        });
 
         res.status(201).json(doc);
     } catch (error) {
-        console.error('Upload Error:', error);
+        console.error('Archive Upload Error:', error);
         res.status(500).json({ 
-            message: 'Failed to save document to archive',
-            error: error.message,
-            fileInfo: req.file ? {
-                originalname: req.file.originalname,
-                mimetype: req.file.mimetype,
-                size: req.file.size,
-                path: req.file.path,
-                filename: req.file.filename
-            } : 'No file provided'
+            message: 'Failed to process document upload',
+            error: error.message 
         });
     }
 };
+
 
 
 

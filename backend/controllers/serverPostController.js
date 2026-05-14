@@ -1,5 +1,17 @@
 const ServerPost = require('../models/ServerPost');
 const ServerMember = require('../models/ServerMember');
+const cloudinary = require('../config/cloudinary');
+
+// Helper to upload buffer to Cloudinary
+const uploadToCloudinary = (buffer, options) => {
+    return new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(options, (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+        });
+        uploadStream.end(buffer);
+    });
+};
 
 // @desc    Get all posts for a server
 // @route   GET /api/servers/:id/posts
@@ -41,8 +53,15 @@ exports.getServerPosts = async (req, res) => {
 exports.createPost = async (req, res) => {
     try {
         const { text } = req.body;
-        const image = req.file ? req.file.path : null;
+        let image = null;
 
+        if (req.file) {
+            const result = await uploadToCloudinary(req.file.buffer, {
+                folder: 'clipvault/images',
+                transformation: [{ width: 1000, height: 1000, crop: 'limit' }]
+            });
+            image = result.secure_url;
+        }
 
         // Check membership
         const member = await ServerMember.findOne({ server: req.params.id, user: req.user._id });

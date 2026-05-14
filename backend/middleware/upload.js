@@ -1,21 +1,30 @@
 const multer = require('multer');
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
-const cloudinary = require('../config/cloudinary');
+const path = require('path');
 
-const storage = new CloudinaryStorage({
-    cloudinary: cloudinary,
-    params: {
-        folder: 'clipvault/images',
-        allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
-        transformation: [{ width: 1000, height: 1000, crop: 'limit' }]
+const storage = multer.memoryStorage();
+
+// Check file type
+function checkFileType(file, cb) {
+    const filetypes = /jpeg|jpg|png|gif|webp/;
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = filetypes.test(file.mimetype);
+
+    if (mimetype && extname) {
+        return cb(null, true);
+    } else {
+        cb(new Error('Error: Images Only!'));
     }
-});
+}
 
 // Init upload
 const upload = multer({
     storage: storage,
     limits: { fileSize: 5000000 }, // 5MB limit
+    fileFilter: function (req, file, cb) {
+        checkFileType(file, cb);
+    }
 });
 
 module.exports = upload;
+
 

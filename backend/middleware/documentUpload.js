@@ -1,19 +1,7 @@
 const multer = require('multer');
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
-const cloudinary = require('../config/cloudinary');
 const path = require('path');
 
-const storage = new CloudinaryStorage({
-    cloudinary: cloudinary,
-    params: async (req, file) => {
-        return {
-            folder: 'clipvault/documents',
-            resource_type: 'auto',
-            public_id: `doc-${Date.now()}`,
-        };
-    },
-});
-
+const storage = multer.memoryStorage();
 
 // Check file type
 function checkFileType(file, cb) {
@@ -50,5 +38,6 @@ const documentUpload = multer({
 });
 
 module.exports = documentUpload;
+
 
 
